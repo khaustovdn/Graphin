@@ -2,6 +2,7 @@ using Gtk 4.0;
 using Adw 1;
 
 template $GraphinWindow: Adw.ApplicationWindow {
+  title: _('Graphin');
   default-width: 600;
   default-height: 300;
   width-request: 360;
@@ -19,9 +20,18 @@ template $GraphinWindow: Adw.ApplicationWindow {
       }
     }
 
-    content: Box chart_box {
-      halign: center;
-      orientation: vertical;
+    content: Adw.Clamp {
+      Box {
+        orientation: vertical;
+
+        ListBox chart_listbox {
+          selection-mode: none;
+
+          styles [
+            "boxed-list",
+          ]
+        }
+      }
     };
   };
 }

@@ -20,17 +20,21 @@
 
 namespace Graphin {
     [GtkTemplate (ui = "/io/github/Graphin/ui/chart.ui")]
-    public class Chart : Gtk.DrawingArea {
+    public class Chart : Adw.Bin {
+        [GtkChild]
+        public unowned Gtk.DrawingArea chart_area;
+
         public Chart () {
             Object ();
         }
 
         construct {
-            this.set_draw_func (draw);
+            chart_area.set_draw_func (draw);
         }
 
         private void draw (Gtk.DrawingArea drawing_area, Cairo.Context context, int width, int height) {
-            context.set_line_width (1.0);
+            context.set_source_rgb (0.2, 0.8, 0.2);
+            context.set_line_width (100.0);
             context.move_to (0, 0);
             context.line_to (width, height);
             context.stroke ();
