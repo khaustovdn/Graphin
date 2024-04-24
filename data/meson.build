@@ -33,4 +33,21 @@ test('Validate schema file',
      compile_schemas,
      args: ['--strict', '--dry-run', meson.current_source_dir()])
 
+blueprints = custom_target('blueprints',
+  input: files(
+    'ui/window.blp',
+    'gtk/help-overlay.blp'
+  ),
+  output: '.',
+  command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
+)
+
+resource_files = files('io.github.Graphin.gresource.xml')
+resources = gnome.compile_resources(
+  'graphin-resources',
+  resource_files,
+  dependencies: blueprints,
+  c_name: 'graphin'
+)
+
 subdir('icons')

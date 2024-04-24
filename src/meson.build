@@ -1,20 +1,21 @@
-graphin_sources = [
-  'main.vala',
-  'application.vala',
-  'window.vala',
-]
-
-graphin_deps = [
-  dependency('gtk4'),
-  dependency('libadwaita-1', version: '>= 1.4'),
-]
-
-graphin_sources += gnome.compile_resources('graphin-resources',
-  'graphin.gresource.xml',
-  c_name: 'graphin'
+graphin_sources = (
+  [blueprints, resources] + files(
+    'application.vala',
+    'main.vala',
+    'window.vala',
+  )
 )
 
-executable('graphin', graphin_sources,
+graphin_vala_args = [
+  '--vapidir', meson.current_source_dir(),
+  '--gresources', resource_files,
+  '--gresourcesdir=data/'
+]
+
+executable(
+  'graphin',
+  graphin_sources,
   dependencies: graphin_deps,
-       install: true,
+  vala_args: graphin_vala_args,
+  install: true,
 )

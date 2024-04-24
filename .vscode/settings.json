@@ -7,8 +7,8 @@
         ".flatpak/**": true,
         "_build/**": true
     },
+    "vala.languageServerPath": "${workspaceFolder}/.flatpak/vala-language-server.sh",
     "mesonbuild.configureOnOpen": false,
     "mesonbuild.buildFolder": "_build",
-    "mesonbuild.mesonPath": "${workspaceFolder}/.flatpak/meson.sh",
-    "vala.languageServerPath": "${workspaceFolder}/.flatpak/vala-language-server.sh"
+    "mesonbuild.mesonPath": "${workspaceFolder}/.flatpak/meson.sh"
 }

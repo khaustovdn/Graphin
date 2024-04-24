@@ -19,11 +19,8 @@
  */
 
 namespace Graphin {
-    [GtkTemplate (ui = "/io/github/Graphin/window.ui")]
+    [GtkTemplate (ui = "/io/github/Graphin/ui/window.ui")]
     public class Window : Adw.ApplicationWindow {
-        [GtkChild]
-        private unowned Gtk.Label label;
-
         public Window (Gtk.Application app) {
             Object (application: app);
         }
