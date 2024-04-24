@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=graphin
+Exec=graphin
+Icon=io.github.Graphin
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

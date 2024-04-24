@@ -1,0 +1,6 @@
+data/io.github.Graphin.desktop.in
+data/io.github.Graphin.metainfo.xml.in
+data/io.github.Graphin.gschema.xml
+src/main.vala
+src/window.vala
+src/window.ui
