@@ -1,15 +1,18 @@
 graphin_sources = (
   [blueprints, resources] + files(
     'application.vala',
+    'chart.vala',
     'main.vala',
     'window.vala',
   )
 )
 
 graphin_vala_args = [
-  '--vapidir', meson.current_source_dir(),
-  '--gresources', resource_files,
-  '--gresourcesdir=data/'
+  '--vapidir',
+  meson.current_source_dir(),
+  '--gresources',
+  resource_files,
+  '--gresourcesdir=data/',
 ]
 
 executable(

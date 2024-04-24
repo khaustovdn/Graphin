@@ -35,6 +35,7 @@ test('Validate schema file',
 
 blueprints = custom_target('blueprints',
   input: files(
+    'ui/chart.blp',
     'ui/window.blp',
     'gtk/help-overlay.blp'
   ),

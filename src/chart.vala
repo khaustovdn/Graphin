@@ -1,4 +1,4 @@
-/* window.vala
+/* chart.vala
  *
  * Copyright 2024 khaustovdn
  *
@@ -19,19 +19,21 @@
  */
 
 namespace Graphin {
-    [GtkTemplate (ui = "/io/github/Graphin/ui/window.ui")]
-    public class Window : Adw.ApplicationWindow {
-        [GtkChild]
-        public unowned Gtk.Box chart_box;
-
-        private Chart chart { get; default = new Chart (); }
-
-        public Window (Gtk.Application app) {
-            Object (application: app);
+    [GtkTemplate (ui = "/io/github/Graphin/ui/chart.ui")]
+    public class Chart : Gtk.DrawingArea {
+        public Chart () {
+            Object ();
         }
 
         construct {
-            chart_box.append (chart);
+            this.set_draw_func (draw);
+        }
+
+        private void draw (Gtk.DrawingArea drawing_area, Cairo.Context context, int width, int height) {
+            context.set_line_width (1.0);
+            context.move_to (0, 0);
+            context.line_to (width, height);
+            context.stroke ();
         }
     }
 }

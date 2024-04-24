@@ -4,6 +4,8 @@ using Adw 1;
 template $GraphinWindow: Adw.ApplicationWindow {
   default-width: 600;
   default-height: 300;
+  width-request: 360;
+  height-request: 294;
 
   content: Adw.ToolbarView {
     [top]
@@ -17,12 +19,9 @@ template $GraphinWindow: Adw.ApplicationWindow {
       }
     }
 
-    content: Label label {
-      label: 'Hello, World!';
-
-      styles [
-        "title-1",
-      ]
+    content: Box chart_box {
+      halign: center;
+      orientation: vertical;
     };
   };
 }
