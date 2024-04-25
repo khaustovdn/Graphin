@@ -3,6 +3,7 @@
   <gresource prefix="/io/github/Graphin">
     <file preprocess="xml-stripblanks">ui/chart.ui</file>
     <file preprocess="xml-stripblanks">ui/window.ui</file>
+    <file>style.css</file>
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
   </gresource>
 </gresources>

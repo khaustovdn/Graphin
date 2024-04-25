@@ -21,11 +21,30 @@ template $GraphinWindow: Adw.ApplicationWindow {
     }
 
     content: Adw.Clamp {
+      margin-bottom: 12;
+      margin-top: 12;
+      margin-start: 12;
+      margin-end: 12;
+
       Box {
         orientation: vertical;
 
-        ListBox chart_listbox {
+        ListBox {
           selection-mode: none;
+          
+          Adw.ComboRow direction_row {
+            title: _("Chart Type");
+
+            model: StringList {
+              strings [
+                "Bar",
+                "Line",
+                "Area",
+              ]
+            };
+          }
+
+          Adw.Bin chart_bin {}
 
           styles [
             "boxed-list",

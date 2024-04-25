@@ -22,7 +22,7 @@ namespace Graphin {
     [GtkTemplate (ui = "/io/github/Graphin/ui/window.ui")]
     public class Window : Adw.ApplicationWindow {
         [GtkChild]
-        public unowned Gtk.ListBox chart_listbox;
+        public unowned Adw.Bin chart_bin;
 
         private Chart chart { get; default = new Chart (); }
 
@@ -31,7 +31,7 @@ namespace Graphin {
         }
 
         construct {
-            chart_listbox.append (chart);
+            chart_bin.set_child (chart);
         }
     }
 }

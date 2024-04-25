@@ -1,4 +1,4 @@
-/* chart.vala
+/* chart-item.vala
  *
  * Copyright 2024 khaustovdn
  *
@@ -19,21 +19,21 @@
  */
 
 namespace Graphin {
-    [GtkTemplate (ui = "/io/github/Graphin/ui/chart.ui")]
-    public class Chart : Adw.Bin {
-        public ChartItem chart { get; construct; }
-
-        [GtkChild]
-        public unowned Gtk.Frame frame;
-
-        public Chart () {
+    public class ChartItem : Gtk.DrawingArea {
+        public ChartItem () {
             Object ();
         }
 
         construct {
-            chart = new ChartItem ();
-            frame.set_child (chart);
-            frame.add_css_class ("frame");
+            this.set_draw_func (draw);
+        }
+
+        private void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            cairo.set_source_rgb (0.2, 0.8, 0.2);
+            cairo.set_line_width (100.0);
+            cairo.move_to (0, 0);
+            cairo.line_to (width, height);
+            cairo.stroke ();
         }
     }
 }

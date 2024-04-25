@@ -2,18 +2,8 @@ using Gtk 4.0;
 using Adw 1;
 
 template $GraphinChart: Adw.Bin {
-  margin-bottom: 12;
-  margin-top: 12;
-  margin-start: 12;
-  margin-end: 12;
-
-  Frame {
+  Frame frame {
     width-request: 360;
     height-request: 294;
-
-    DrawingArea chart_area {
-      content-width: 300;
-      content-height: 300;
-    }
   }
 }

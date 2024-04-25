@@ -1,5 +1,6 @@
 graphin_sources = (
   [blueprints, resources] + files(
+    'layouts/chart-item.vala',
     'application.vala',
     'chart.vala',
     'main.vala',
