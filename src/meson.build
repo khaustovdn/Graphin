@@ -4,6 +4,7 @@ graphin_sources = (
     'application.vala',
     'chart.vala',
     'main.vala',
+    'point.vala',
     'window.vala',
   )
 )
