@@ -1,4 +1,4 @@
-/* chart-bar.vala
+/* chart-axis.vala
  *
  * Copyright 2024 khaustovdn
  *
@@ -19,23 +19,22 @@
  */
 
 namespace Graphin {
-    public class ChartBar : Chart {
-        public ChartBar () {
+    public class ChartAxis : Object {
+        public ChartAxis () {
             Object ();
         }
 
-        protected override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            base.draw (drawing_area, cairo, width, height);
-            this.draw_series (drawing_area, cairo, width, height);
-        }
+        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, Point center) {
+            cairo.set_source_rgb (0.5, 0.5, 0.5);
+            cairo.set_line_width (0.5);
 
-        private void draw_series (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            cairo.set_line_width (4.0 / scale);
-            foreach (var item in this.series) {
-                cairo.move_to (center.x + item.x / scale, center.y);
-                cairo.line_to (center.x + item.x / scale, center.y - item.y / scale);
-                cairo.stroke ();
-            }
+            cairo.move_to (center.x, 0.0);
+            cairo.line_to (center.x, height);
+            cairo.stroke ();
+
+            cairo.line_to (0.0, center.y);
+            cairo.line_to (width, center.y);
+            cairo.stroke ();
         }
     }
 }

@@ -2,6 +2,9 @@ graphin_sources = (
   [blueprints, resources] + files(
     'layouts/chart-bar.vala',
     'application.vala',
+    'chart-axis.vala',
+    'chart-gesture-handler.vala',
+    'chart-grid.vala',
     'chart.vala',
     'main.vala',
     'point.vala',
