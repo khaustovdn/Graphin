@@ -1,4 +1,4 @@
-/* chart.vala
+/* chart-bar.vala
  *
  * Copyright 2024 khaustovdn
  *
@@ -19,20 +19,13 @@
  */
 
 namespace Graphin {
-    [GtkTemplate (ui = "/io/github/Graphin/ui/chart.ui")]
-    public class Chart : Adw.Bin {
-        public ChartItem chart { get; construct; }
-
-        [GtkChild]
-        public unowned Gtk.Frame frame;
-
-        public Chart (ChartItem chart) {
-            Object (chart: chart);
+    public class ChartBar : ChartItem {
+        public ChartBar () {
+            Object ();
         }
 
-        construct {
-            frame.set_child (chart);
-            frame.add_css_class ("frame");
+        public override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            base.draw (drawing_area, cairo, width, height);
         }
     }
 }

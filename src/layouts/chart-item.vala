@@ -42,9 +42,10 @@ namespace Graphin {
             Gtk.GestureZoom scale_gesture = new Gtk.GestureZoom ();
 
             move_gesture.drag_update.connect ((offset_x, offset_y) => {
-                var result_x = this.center.x + ((offset_x - current_position.x > 0) ? 1 : -1) * (offset_x - current_position.x).abs ();
-                var result_y = this.center.y + ((offset_y - current_position.y > 0) ? 1 : -1) * (offset_y - current_position.y).abs ();
-                this.center = new Point (result_x, result_y);
+                var dx = offset_x - current_position.x;
+                var dy = offset_y - current_position.y;
+                this.center = new Point (this.center.x + (dx > 0 ? 1 : -1) * dx.abs (),
+                                         this.center.y + (dy > 0 ? 1 : -1) * dy.abs ());
                 current_position = new Point (offset_x, offset_y);
                 this.queue_draw ();
             });
@@ -54,12 +55,15 @@ namespace Graphin {
             });
 
             scale_gesture.scale_changed.connect ((scale) => {
-                var result = this.scale + ((float) current_scale - scale) * (this.scale.abs () * 2);
+                var delta = (float) current_scale - scale;
+                var result = this.scale + delta * this.scale.abs () * 2;
+
                 if (result > 0) {
                     double widget_horizontal_center = this.get_content_width () / 2;
                     double widget_vertical_center = this.get_content_height () / 2;
                     double center_x = widget_horizontal_center - (widget_horizontal_center - this.center.x) * (this.scale / result);
                     double center_y = widget_vertical_center - (widget_vertical_center - this.center.y) * (this.scale / result);
+
                     this.center = new Point (center_x, center_y);
                     this.scale = result;
                     current_scale = scale;
@@ -75,7 +79,7 @@ namespace Graphin {
             this.add_controller (scale_gesture);
         }
 
-        protected void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+        protected virtual void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             this.draw_grid (drawing_area, cairo, width, height);
         }
 
@@ -90,30 +94,14 @@ namespace Graphin {
             cairo.set_line_width (0.1);
 
             double step = this.calculate_grid_step (scale);
-            if (center.x < width) {
-                for (double i = center.x + step; i < width; i += step) {
-                    if (i < 0)continue;
-                    this.draw_line (cairo, i, 0, i, height);
-                }
-            }
-            if (center.x > 0) {
-                for (double i = center.x - step; i > 0; i -= step) {
-                    if (i > width)continue;
-                    this.draw_line (cairo, i, 0, i, height);
-                }
+            for (double i = center.x + step, j = center.x - step; i < width || j > 0; i += step, j -= step) {
+                if (i >= 0 && i <= width)draw_line (cairo, i, 0, i, height);
+                if (j >= 0 && j <= width)draw_line (cairo, j, 0, j, height);
             }
 
-            if (center.y < height) {
-                for (double i = center.y + step; i < height; i += step) {
-                    if (i < 0)continue;
-                    this.draw_line (cairo, 0, i, width, i);
-                }
-            }
-            if ((center.y > 0)) {
-                for (double i = center.y - step; i > 0; i -= step) {
-                    if (i > height)continue;
-                    this.draw_line (cairo, 0, i, width, i);
-                }
+            for (double i = center.y + step, j = center.y - step; i < height || j > 0; i += step, j -= step) {
+                if (i >= 0 && i <= height)draw_line (cairo, 0, i, width, i);
+                if (j >= 0 && j <= height)draw_line (cairo, 0, j, width, j);
             }
         }
 
@@ -126,12 +114,8 @@ namespace Graphin {
         private double calculate_grid_step (double scale) {
             double result = 100 / scale;
 
-            while (true) {
-                if (result < 100)
-                    result *= 2;
-                else if (result > 240)
-                    result /= 2;
-                else break;
+            while (result < 100 || result > 240) {
+                result = (result < 100) ? result * 2 : result / 2;
             }
 
             return result;

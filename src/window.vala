@@ -24,13 +24,13 @@ namespace Graphin {
         [GtkChild]
         public unowned Adw.Bin chart_bin;
 
-        private Chart chart { get; default = new Chart (); }
-
         public Window (Gtk.Application app) {
             Object (application: app);
         }
 
         construct {
+            ChartBar chart_bar = new ChartBar ();
+            Chart chart = new Chart (chart_bar);
             chart_bin.set_child (chart);
         }
     }
