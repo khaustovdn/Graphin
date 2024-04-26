@@ -10,7 +10,7 @@ template $GraphinWindow: Adw.ApplicationWindow {
 
   content: Adw.ToolbarView {
     [top]
-    Adw.HeaderBar header_bar {
+    Adw.HeaderBar {
       [end]
       MenuButton {
         primary: true;
@@ -28,12 +28,13 @@ template $GraphinWindow: Adw.ApplicationWindow {
 
       Box {
         orientation: vertical;
+        spacing: 18;
 
         ListBox {
           selection-mode: none;
-          
-          Adw.ComboRow direction_row {
-            title: _("Chart Type");
+
+          Adw.ComboRow chart_type_combo_row {
+            title: _('Chart Type');
 
             model: StringList {
               strings [
@@ -48,6 +49,16 @@ template $GraphinWindow: Adw.ApplicationWindow {
 
           styles [
             "boxed-list",
+          ]
+        }
+
+        Button chart_show_button {
+          label: _('Show Chart');
+          halign: center;
+
+          styles [
+            "pill",
+            "suggested-action",
           ]
         }
       }

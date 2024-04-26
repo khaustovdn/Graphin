@@ -10,6 +10,7 @@ gnome = import('gnome')
 graphin_deps = [
   dependency('gtk4'),
   dependency('libadwaita-1', version: '>= 1.4'),
+  dependency('gee-0.8'),
 ]
 
 subdir('data')

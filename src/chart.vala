@@ -19,20 +19,104 @@
  */
 
 namespace Graphin {
-    [GtkTemplate (ui = "/io/github/Graphin/ui/chart.ui")]
-    public class Chart : Adw.Bin {
-        public ChartItem chart { get; construct; }
-
-        [GtkChild]
-        public unowned Gtk.Frame frame;
-
-        public Chart (ChartItem chart) {
-            Object (chart: chart);
-        }
+    public class Chart : Gtk.DrawingArea {
+        public Gee.ArrayList<Point> series { get; construct; }
+        protected Point center { get; set; }
+        protected double scale { get; set; }
 
         construct {
-            frame.set_child (chart);
-            frame.add_css_class ("frame");
+            this.set_content_width (360);
+            this.set_content_height (480);
+            this.set_draw_func (draw);
+
+            this.series = new Gee.ArrayList<Point> ();
+            this.center = new Point (50.0, this.get_content_height () - 50);
+            this.scale = 1.0;
+
+            Point current_position = new Point (0, 0);
+            double current_scale = 1.0;
+
+            Gtk.GestureDrag move_gesture = new Gtk.GestureDrag ();
+            Gtk.GestureZoom scale_gesture = new Gtk.GestureZoom ();
+
+            move_gesture.drag_update.connect ((offset_x, offset_y) => {
+                var dx = offset_x - current_position.x;
+                var dy = offset_y - current_position.y;
+                this.center = new Point (this.center.x + (dx > 0 ? 1 : -1) * dx.abs (),
+                                         this.center.y + (dy > 0 ? 1 : -1) * dy.abs ());
+                current_position = new Point (offset_x, offset_y);
+                this.queue_draw ();
+            });
+
+            move_gesture.drag_end.connect (() => {
+                current_position = new Point (0, 0);
+            });
+
+            scale_gesture.scale_changed.connect ((scale) => {
+                var delta = (float) current_scale - scale;
+                var result = this.scale + delta * this.scale.abs () * 2;
+
+                if (result > 0) {
+                    double widget_horizontal_center = this.get_content_width () / 2;
+                    double widget_vertical_center = this.get_content_height () / 2;
+                    double center_x = widget_horizontal_center - (widget_horizontal_center - this.center.x) * (this.scale / result);
+                    double center_y = widget_vertical_center - (widget_vertical_center - this.center.y) * (this.scale / result);
+
+                    this.center = new Point (center_x, center_y);
+                    this.scale = result;
+                    current_scale = scale;
+                    this.queue_draw ();
+                }
+            });
+
+            scale_gesture.end.connect (() => {
+                current_scale = 1.0;
+            });
+
+            this.add_controller (move_gesture);
+            this.add_controller (scale_gesture);
+        }
+
+        protected virtual void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            this.draw_grid (drawing_area, cairo, width, height);
+        }
+
+        private void draw_grid (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            cairo.set_source_rgb (0.5, 0.5, 0.5);
+
+            cairo.set_line_width (0.5);
+
+            this.draw_line (cairo, center.x, 0, center.x, height);
+            this.draw_line (cairo, 0, center.y, width, center.y);
+
+            cairo.set_line_width (0.1);
+
+            double step = this.calculate_grid_step (scale);
+            for (double i = center.x + step, j = center.x - step; i < width || j > 0; i += step, j -= step) {
+                if (i >= 0 && i <= width)draw_line (cairo, i, 0, i, height);
+                if (j >= 0 && j <= width)draw_line (cairo, j, 0, j, height);
+            }
+
+            for (double i = center.y + step, j = center.y - step; i < height || j > 0; i += step, j -= step) {
+                if (i >= 0 && i <= height)draw_line (cairo, 0, i, width, i);
+                if (j >= 0 && j <= height)draw_line (cairo, 0, j, width, j);
+            }
+        }
+
+        protected void draw_line (Cairo.Context cairo, double x1, double y1, double x2, double y2) {
+            cairo.move_to (x1, y1);
+            cairo.line_to (x2, y2);
+            cairo.stroke ();
+        }
+
+        private double calculate_grid_step (double scale) {
+            double result = 100 / scale;
+
+            while (result < 100 || result > 240) {
+                result = (result < 100) ? result * 2 : result / 2;
+            }
+
+            return result;
         }
     }
 }

@@ -19,13 +19,21 @@
  */
 
 namespace Graphin {
-    public class ChartBar : ChartItem {
+    public class ChartBar : Chart {
         public ChartBar () {
             Object ();
         }
 
-        public override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+        protected override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             base.draw (drawing_area, cairo, width, height);
+            this.draw_series (drawing_area, cairo, width, height);
+        }
+
+        private void draw_series (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            cairo.set_line_width (4.0 / scale);
+            foreach (var item in this.series) {
+                this.draw_line (cairo, center.x + item.x / scale, center.y, center.x + item.x / scale, center.y - item.y / scale);
+            }
         }
     }
 }

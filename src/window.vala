@@ -23,15 +23,38 @@ namespace Graphin {
     public class Window : Adw.ApplicationWindow {
         [GtkChild]
         public unowned Adw.Bin chart_bin;
+        [GtkChild]
+        public unowned Adw.ComboRow chart_type_combo_row;
+        [GtkChild]
+        public unowned Gtk.Button chart_show_button;
+
+        private Chart chart { get; set; default = new Chart (); }
 
         public Window (Gtk.Application app) {
             Object (application: app);
         }
 
         construct {
-            ChartBar chart_bar = new ChartBar ();
-            Chart chart = new Chart (chart_bar);
-            chart_bin.set_child (chart);
+            Gee.ArrayList<Point> series = new Gee.ArrayList<Point>.wrap ({
+                new Point (10.0, 100),
+                new Point (20.0, 130),
+                new Point (30.0, 30),
+            });
+
+            chart_show_button.clicked.connect (() => {
+                this.chart = new Chart ();
+
+                switch (this.chart_type_combo_row.selected) {
+                    case (0):
+                        this.chart = new ChartBar ();
+                        break;
+                }
+
+                this.chart.series.add_all (series);
+                this.chart_bin.set_child (this.chart);
+            });
+
+            this.chart_bin.set_child (this.chart);
         }
     }
 }
