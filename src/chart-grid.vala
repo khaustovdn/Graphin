@@ -19,12 +19,15 @@
  */
 
 namespace Graphin {
-    public class ChartGrid : Object {
+    public class ChartGrid : Object, IChartDrawable {
+        private double scale;
+        private Point center;
+
         public ChartGrid () {
             Object ();
         }
 
-        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, Point center, double scale) {
+        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             cairo.set_source_rgb (0.5, 0.5, 0.5);
             cairo.set_line_width (0.1);
 
@@ -63,6 +66,11 @@ namespace Graphin {
             }
 
             return result;
+        }
+
+        public void set_parameters (Point center, double scale) {
+            this.center = center;
+            this.scale = scale;
         }
     }
 }

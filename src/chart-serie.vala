@@ -1,4 +1,4 @@
-/* chart-axis.vala
+/* chart-serie.vala
  *
  * Copyright 2024 khaustovdn
  *
@@ -19,26 +19,12 @@
  */
 
 namespace Graphin {
-    public class ChartAxis : Object, IChartDrawable {
-        private double scale;
-        private Point center;
+    public abstract class ChartSerie : Object, IChartDrawable {
+        protected double scale;
+        protected Point center;
+        public Gee.ArrayList<Point> points { get; default = new Gee.ArrayList<Point> (); }
 
-        public ChartAxis () {
-            Object ();
-        }
-
-        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            cairo.set_source_rgb (0.5, 0.5, 0.5);
-            cairo.set_line_width (0.5);
-
-            cairo.move_to (this.center.x, 0.0);
-            cairo.line_to (this.center.x, height);
-            cairo.stroke ();
-
-            cairo.line_to (0.0, this.center.y);
-            cairo.line_to (width, this.center.y);
-            cairo.stroke ();
-        }
+        public abstract void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height);
 
         public void set_parameters (Point center, double scale) {
             this.center = center;

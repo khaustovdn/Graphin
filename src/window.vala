@@ -28,32 +28,23 @@ namespace Graphin {
         [GtkChild]
         public unowned Gtk.Button chart_show_button;
 
-        private Chart chart { get; set; default = new Chart (); }
+        private Chart chart { get; set; }
 
         public Window (Gtk.Application app) {
             Object (application: app);
         }
 
         construct {
-            Gee.ArrayList<Point> series = new Gee.ArrayList<Point>.wrap ({
+            Gee.ArrayList<Point> points = new Gee.ArrayList<Point>.wrap ({
                 new Point (10.0, 100),
                 new Point (20.0, 130),
                 new Point (30.0, 30),
             });
 
-            chart_show_button.clicked.connect (() => {
-                this.chart = new Chart ();
-
-                switch (this.chart_type_combo_row.selected) {
-                    case (0):
-                        this.chart = new ChartBar ();
-                        break;
-                }
-
-                this.chart.series.add_all (series);
-                this.chart_bin.set_child (this.chart);
-            });
-
+            this.chart = new ChartBar ();
+            ChartBarSerie serie = new ChartBarSerie ();
+            serie.points.add_all (points);
+            this.chart.series.add (serie);
             this.chart_bin.set_child (this.chart);
         }
     }

@@ -19,53 +19,31 @@
  */
 
 namespace Graphin {
-    public class Chart : Gtk.DrawingArea {
-        protected Point center { get; set; }
-        protected double scale { get; set; }
-        private ChartAxis axis { get; default = new ChartAxis (); }
-        private ChartGrid grid { get; default = new ChartGrid (); }
-        public Gee.ArrayList<Point> series { get; default = new Gee.ArrayList<Point> (); }
+    public abstract class Chart : Gtk.DrawingArea, IChartDrawable {
+        public Point center;
+        public double scale;
+        private IChartDrawable axis { get; default = new ChartAxis (); }
+        private IChartDrawable grid { get; default = new ChartGrid (); }
+        public ChartGestureHandler gesture_handler { get; construct; }
+        public Gee.ArrayList<ChartSerie> series { get; construct; }
 
         construct {
-            this.set_content_width (360);
-            this.set_content_height (480);
+            this.content_width = 360;
+            this.content_height = 480;
             this.set_draw_func (draw);
-
-            this.center = new Point (50.0, this.content_height - 50);
-            this.scale = 1.0;
-
-            this.setup_gestures ();
+            this.set_parameters (new Point (50.0, this.content_height - 50), 1.0);
         }
 
-        protected virtual void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            this.axis.draw (drawing_area, cairo, width, height, center);
-            this.grid.draw (drawing_area, cairo, width, height, center, scale);
+        public virtual void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            this.axis.set_parameters (this.center, this.scale);
+            this.axis.draw (drawing_area, cairo, width, height);
+            this.grid.set_parameters (this.center, this.scale);
+            this.grid.draw (drawing_area, cairo, width, height);
         }
 
-        private void setup_gestures () {
-            ChartGestureHandler gesture_handler = new ChartGestureHandler ();
-
-            Gtk.GestureDrag move_gesture = new Gtk.GestureDrag ();
-            Gtk.GestureZoom scale_gesture = new Gtk.GestureZoom ();
-
-            move_gesture.drag_update.connect ((offset_x, offset_y) => {
-                gesture_handler.handle_move (new Point (offset_x, offset_y), ref this._center);
-                this.queue_draw ();
-            });
-            move_gesture.drag_end.connect (() => {
-                gesture_handler.current_center_reset ();
-            });
-
-            scale_gesture.scale_changed.connect ((scale) => {
-                gesture_handler.handle_scale (this.content_width, this.content_height, scale, ref this._center, ref this._scale);
-                this.queue_draw ();
-            });
-            scale_gesture.end.connect (() => {
-                gesture_handler.current_scale_reset ();
-            });
-
-            this.add_controller (move_gesture);
-            this.add_controller (scale_gesture);
+        public void set_parameters (Point center, double scale) {
+            this.center = center;
+            this.scale = scale;
         }
     }
 }
