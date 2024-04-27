@@ -32,6 +32,8 @@ namespace Graphin {
             this.content_height = 480;
             this.set_draw_func (draw);
             this.set_parameters (new Point (50.0, this.content_height - 50), 1.0);
+            this.gesture_handler = new ChartGestureHandler (this);
+            this.series = new Gee.ArrayList<ChartSerie> ();
         }
 
         public virtual void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {

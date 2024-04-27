@@ -21,7 +21,7 @@
 namespace Graphin {
     public class ChartBar : Chart {
         public ChartBar () {
-            Object (series: new Gee.ArrayList<ChartBarSerie> (), gesure_handler: new ChartGestureHandler (this));
+            Object ();
         }
 
         protected override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
