@@ -20,15 +20,7 @@
 
 namespace Graphin {
     public abstract class ChartSerie : Object, IChartDrawable {
-        protected double scale;
-        protected Point center;
         public Gee.ArrayList<Point> points { get; default = new Gee.ArrayList<Point> (); }
-
-        public abstract void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height);
-
-        public void set_parameters (Point center, double scale) {
-            this.center = center;
-            this.scale = scale;
-        }
+        public abstract void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, ChartParameters parameters);
     }
 }

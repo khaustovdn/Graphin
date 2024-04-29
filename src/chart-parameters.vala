@@ -1,4 +1,4 @@
-/* chart-bar-serie.vala
+/* chart-parameters.vala
  *
  * Copyright 2024 khaustovdn
  *
@@ -19,18 +19,12 @@
  */
 
 namespace Graphin {
-    public class ChartBarSerie : ChartSerie {
-        public ChartBarSerie () {
-            Object ();
-        }
+    public class ChartParameters : Object {
+        public Point center { get; set; }
+        public double scale { get; set; }
 
-        public override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            cairo.set_line_width (4.0 / this.scale);
-            foreach (var item in this.points) {
-                cairo.move_to (this.center.x + item.x / this.scale, this.center.y);
-                cairo.line_to (this.center.x + item.x / this.scale, this.center.y - item.y / this.scale);
-                cairo.stroke ();
-            }
+        public ChartParameters (Point center, double scale) {
+            Object (center: center, scale: scale);
         }
     }
 }

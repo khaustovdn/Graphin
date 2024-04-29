@@ -20,20 +20,17 @@
 
 namespace Graphin {
     public class ChartGrid : Object, IChartDrawable {
-        private double scale;
-        private Point center;
-
         public ChartGrid () {
             Object ();
         }
 
-        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, ChartParameters parameters) {
             cairo.set_source_rgb (0.5, 0.5, 0.5);
             cairo.set_line_width (0.1);
 
-            double step = this.calculate_grid_step (scale);
+            double step = this.calculate_grid_step (parameters.scale);
 
-            for (double i = center.x + step, j = center.x - step; i < width || j > 0; i += step, j -= step) {
+            for (double i = parameters.center.x + step, j = parameters.center.x - step; i < width || j > 0; i += step, j -= step) {
                 if (i >= 0 && i <= width) {
                     cairo.move_to (i, 0.0);
                     cairo.line_to (i, height);
@@ -44,7 +41,7 @@ namespace Graphin {
                 }
             }
 
-            for (double i = center.y + step, j = center.y - step; i < height || j > 0; i += step, j -= step) {
+            for (double i = parameters.center.y + step, j = parameters.center.y - step; i < height || j > 0; i += step, j -= step) {
                 if (i >= 0 && i <= height) {
                     cairo.move_to (0.0, i);
                     cairo.line_to (width, i);
@@ -66,11 +63,6 @@ namespace Graphin {
             }
 
             return result;
-        }
-
-        public void set_parameters (Point center, double scale) {
-            this.center = center;
-            this.scale = scale;
         }
     }
 }

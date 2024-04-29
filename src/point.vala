@@ -20,8 +20,8 @@
 
 namespace Graphin {
     public class Point : Object {
-        public double x { get; construct; }
-        public double y { get; construct; }
+        public double x { get; set; }
+        public double y { get; set; }
 
         public Point (double x, double y) {
             Object (x: x, y: y);

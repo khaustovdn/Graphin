@@ -19,33 +19,35 @@
  */
 
 namespace Graphin {
-    public abstract class Chart : Gtk.DrawingArea, IChartDrawable {
-        public Point center;
-        public double scale;
-        private IChartDrawable axis { get; default = new ChartAxis (); }
-        private IChartDrawable grid { get; default = new ChartGrid (); }
-        public ChartGestureHandler gesture_handler { get; construct; }
-        public Gee.ArrayList<ChartSerie> series { get; construct; }
+    public class Chart : Gtk.DrawingArea, IChartDrawable {
+        public ChartParameters parameters { get; construct; }
+        private ChartAxis axis { get; default = new ChartAxis (); }
+        private ChartGrid grid { get; default = new ChartGrid (); }
+        public ChartGestureHandler gesture_handler { private get; construct; }
+        public Gee.ArrayList<ChartSerie> series { get; default = new Gee.ArrayList<ChartSerie> (); }
+
+        public Chart () {
+            Object ();
+        }
 
         construct {
             this.content_width = 360;
             this.content_height = 480;
-            this.set_draw_func (draw);
-            this.set_parameters (new Point (50.0, this.content_height - 50), 1.0);
+            this.parameters = new ChartParameters (new Point (20.0, this.content_height - 20.0), 1.0);
             this.gesture_handler = new ChartGestureHandler (this);
-            this.series = new Gee.ArrayList<ChartSerie> ();
+            this.set_draw_func (this.draw_func);
         }
 
-        public virtual void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            this.axis.set_parameters (this.center, this.scale);
-            this.axis.draw (drawing_area, cairo, width, height);
-            this.grid.set_parameters (this.center, this.scale);
-            this.grid.draw (drawing_area, cairo, width, height);
+        private void draw_func (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            this.draw (drawing_area, cairo, width, height, this.parameters);
         }
 
-        public void set_parameters (Point center, double scale) {
-            this.center = center;
-            this.scale = scale;
+        private void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, ChartParameters parameters) {
+            this.axis.draw (drawing_area, cairo, width, height, parameters);
+            this.grid.draw (drawing_area, cairo, width, height, parameters);
+            foreach (var serie in this.series) {
+                serie.draw (drawing_area, cairo, width, height, parameters);
+            }
         }
     }
 }

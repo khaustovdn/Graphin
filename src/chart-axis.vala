@@ -20,29 +20,21 @@
 
 namespace Graphin {
     public class ChartAxis : Object, IChartDrawable {
-        private double scale;
-        private Point center;
-
         public ChartAxis () {
             Object ();
         }
 
-        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, ChartParameters parameters) {
             cairo.set_source_rgb (0.5, 0.5, 0.5);
             cairo.set_line_width (0.5);
 
-            cairo.move_to (this.center.x, 0.0);
-            cairo.line_to (this.center.x, height);
+            cairo.move_to (parameters.center.x, 0.0);
+            cairo.line_to (parameters.center.x, height);
             cairo.stroke ();
 
-            cairo.line_to (0.0, this.center.y);
-            cairo.line_to (width, this.center.y);
+            cairo.line_to (0.0, parameters.center.y);
+            cairo.line_to (width, parameters.center.y);
             cairo.stroke ();
-        }
-
-        public void set_parameters (Point center, double scale) {
-            this.center = center;
-            this.scale = scale;
         }
     }
 }

@@ -1,4 +1,4 @@
-/* chart-drawable.vala
+/* chart-bar-serie.vala
  *
  * Copyright 2024 khaustovdn
  *
@@ -19,7 +19,18 @@
  */
 
 namespace Graphin {
-    public interface IChartDrawable : Object {
-        public abstract void draw(Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, ChartParameters parameters);
+    public class ChartBarSerie : ChartSerie {
+        public ChartBarSerie () {
+            Object ();
+        }
+
+        public override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, ChartParameters parameters) {
+            cairo.set_line_width (4.0);
+            foreach (var point in this.points) {
+                cairo.move_to (parameters.center.x + point.x / parameters.scale, parameters.center.y);
+                cairo.line_to (parameters.center.x + point.x / parameters.scale, parameters.center.y - point.y / parameters.scale);
+                cairo.stroke ();
+            }
+        }
     }
 }

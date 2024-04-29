@@ -23,10 +23,6 @@ namespace Graphin {
     public class Window : Adw.ApplicationWindow {
         [GtkChild]
         public unowned Adw.Bin chart_bin;
-        [GtkChild]
-        public unowned Adw.ComboRow chart_type_combo_row;
-        [GtkChild]
-        public unowned Gtk.Button chart_show_button;
 
         private Chart chart { get; set; }
 
@@ -39,10 +35,19 @@ namespace Graphin {
                 new Point (10.0, 100),
                 new Point (20.0, 130),
                 new Point (30.0, 30),
+                new Point (40.0, 80),
+                new Point (50.0, 60),
+                new Point (60.0, 90),
+                new Point (70.0, 100),
+                new Point (80.0, 110),
+                new Point (90.0, 90),
+                new Point (100.0, 0),
+                new Point (110.0, 50),
+                new Point (120.0, 10),
             });
 
-            this.chart = new ChartBar ();
-            ChartBarSerie serie = new ChartBarSerie ();
+            this.chart = new Chart ();
+            ChartLineSerie serie = new ChartLineSerie ();
             serie.points.add_all (points);
             this.chart.series.add (serie);
             this.chart_bin.set_child (this.chart);
