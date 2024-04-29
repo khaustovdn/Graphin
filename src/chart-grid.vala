@@ -19,12 +19,14 @@
  */
 
 namespace Graphin {
-    public class ChartGrid : Object, IChartDrawable {
-        public ChartGrid () {
-            Object ();
+    public class ChartGrid : Gtk.DrawingArea, IChartDrawable {
+        public ChartParameters parameters { get; construct; }
+
+        public ChartGrid (ChartParameters parameters) {
+            Object (parameters: parameters);
         }
 
-        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, ChartParameters parameters) {
+        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             cairo.set_source_rgb (0.5, 0.5, 0.5);
             cairo.set_line_width (0.1);
 

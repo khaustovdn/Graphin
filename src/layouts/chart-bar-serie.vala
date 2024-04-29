@@ -20,11 +20,11 @@
 
 namespace Graphin {
     public class ChartBarSerie : ChartSerie {
-        public ChartBarSerie () {
-            Object ();
+        public ChartBarSerie (ChartParameters parameters) {
+            Object (parameters: parameters);
         }
 
-        public override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, ChartParameters parameters) {
+        public override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             cairo.set_line_width (4.0);
             foreach (var point in this.points) {
                 cairo.move_to (parameters.center.x + point.x / parameters.scale, parameters.center.y);

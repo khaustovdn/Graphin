@@ -31,25 +31,23 @@ namespace Graphin {
         }
 
         construct {
-            Gee.ArrayList<Point> points = new Gee.ArrayList<Point>.wrap ({
-                new Point (10.0, 100),
-                new Point (20.0, 130),
-                new Point (30.0, 30),
-                new Point (40.0, 80),
-                new Point (50.0, 60),
-                new Point (60.0, 90),
-                new Point (70.0, 100),
-                new Point (80.0, 110),
-                new Point (90.0, 90),
-                new Point (100.0, 0),
-                new Point (110.0, 50),
-                new Point (120.0, 10),
-            });
+            Gee.ArrayList<Point> points = new Gee.ArrayList<Point> ();
+            Gee.ArrayList<Point> points_bar = new Gee.ArrayList<Point> ();
+            for (double i = -100; i <= 100; i += 0.01) {
+                points.add (new Point (i, Math.cos (i)));
+            }
+            for (double i = -100; i <= 100; i += 1) {
+                points_bar.add (new Point (i, Math.cos (i)));
+            }
 
-            this.chart = new Chart ();
-            ChartLineSerie serie = new ChartLineSerie ();
+            ChartParameters parameters = new ChartParameters (new Point (0.0, 0.0), 1.0);
+            this.chart = new Chart (parameters, new ChartAxis (parameters), new ChartGrid (parameters));
+            ChartLineSerie serie = new ChartLineSerie (chart.parameters);
+            ChartBarSerie serie_bar = new ChartBarSerie (chart.parameters);
             serie.points.add_all (points);
+            serie_bar.points.add_all (points_bar);
             this.chart.series.add (serie);
+            this.chart.series.add (serie_bar);
             this.chart_bin.set_child (this.chart);
         }
     }

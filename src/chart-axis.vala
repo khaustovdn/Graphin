@@ -20,11 +20,13 @@
 
 namespace Graphin {
     public class ChartAxis : Object, IChartDrawable {
-        public ChartAxis () {
-            Object ();
+        public ChartParameters parameters { get; set; }
+
+        public ChartAxis (ChartParameters parameters) {
+            Object (parameters: parameters);
         }
 
-        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, ChartParameters parameters) {
+        public void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             cairo.set_source_rgb (0.5, 0.5, 0.5);
             cairo.set_line_width (0.5);
 

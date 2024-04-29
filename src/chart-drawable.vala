@@ -20,6 +20,6 @@
 
 namespace Graphin {
     public interface IChartDrawable : Object {
-        public abstract void draw(Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height, ChartParameters parameters);
+        public abstract void draw(Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height);
     }
 }
