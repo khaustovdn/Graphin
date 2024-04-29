@@ -19,6 +19,11 @@
  */
 
 namespace Graphin {
+    public enum ChartGridStatus {
+        ENABLE,
+        DISABLE
+    }
+
     public class ChartGrid : Gtk.DrawingArea, IChartDrawable {
         public ChartParameters parameters { get; construct; }
 
@@ -30,7 +35,7 @@ namespace Graphin {
             cairo.set_source_rgb (0.5, 0.5, 0.5);
             cairo.set_line_width (0.1);
 
-            double step = this.calculate_grid_step (parameters.scale);
+            double step = this.calculate_grid_step (parameters.zoom);
 
             for (double i = parameters.center.x + step, j = parameters.center.x - step; i < width || j > 0; i += step, j -= step) {
                 if (i >= 0 && i <= width) {

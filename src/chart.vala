@@ -21,35 +21,48 @@
 namespace Graphin {
     public class Chart : Gtk.DrawingArea, IChartDrawable {
         public ChartParameters parameters { get; construct; }
-        public ChartAxis? axis { get; construct; }
-        public ChartGrid? grid { get; construct; }
+        public ChartAxis? axis { get; set; }
+        public ChartGrid? grid { get; set; }
         public ChartGestureHandler gesture_handler { get; construct; }
         public Gee.ArrayList<ChartSerie> series { get; default = new Gee.ArrayList<ChartSerie> (); }
 
-        public Chart (ChartParameters parameters, ChartAxis? axis, ChartGrid? grid) {
-            Object (parameters : parameters, axis : axis, grid : grid);
+        public Chart (Point center, double zoom, ChartAxisStatus axis_status, ChartGridStatus grid_status) {
+            Object (parameters : new ChartParameters (new Point (center.x, center.y), zoom));
+            axis = (axis_status == ChartAxisStatus.ENABLE) ? new ChartAxis (this.parameters) : null;
+            grid = (grid_status == ChartGridStatus.ENABLE) ? new ChartGrid (this.parameters) : null;
         }
 
         construct {
             this.content_width = 360;
             this.content_height = 480;
 
+            this.parameters = new ChartParameters (new Point (this.parameters.center.x, this.content_height - this.parameters.center.y), this.parameters.zoom);
             this.gesture_handler = new ChartGestureHandler (this.parameters);
 
-            Gtk.GestureZoom scale = new Gtk.GestureZoom ();
-            scale.update.connect (this.queue_draw);
-            scale.scale_changed.connect (gesture_handler.handle_scale);
-            scale.end.connect (gesture_handler.current_scale_reset);
-
-            Gtk.GestureDrag drag = new Gtk.GestureDrag ();
-            drag.update.connect (this.queue_draw);
-            drag.drag_update.connect (gesture_handler.handle_move);
-            drag.drag_end.connect (gesture_handler.current_center_reset);
-
-            this.add_controller (scale);
-            this.add_controller (drag);
+            this.setup_gestures ();
 
             this.set_draw_func (this.draw);
+        }
+
+        private void setup_gestures () {
+            Gtk.GestureZoom scale = new Gtk.GestureZoom ();
+            scale.scale_changed.connect (gesture_handler.handle_zoom);
+            scale.end.connect (gesture_handler.current_scale_reset);
+
+            Gtk.EventControllerScroll scroll = new Gtk.EventControllerScroll (Gtk.EventControllerScrollFlags.BOTH_AXES);
+            scroll.scroll.connect (gesture_handler.handle_scroll);
+            scroll.scroll_end.connect (gesture_handler.current_scale_reset);
+
+            Gtk.GestureDrag drag = new Gtk.GestureDrag ();
+            drag.drag_update.connect (gesture_handler.handle_drag);
+            drag.drag_end.connect (gesture_handler.current_center_reset);
+
+            this.parameters.notify["zoom"].connect (this.queue_draw);
+            this.parameters.notify["center"].connect (this.queue_draw);
+
+            this.add_controller (scale);
+            this.add_controller (scroll);
+            this.add_controller (drag);
         }
 
         private void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {

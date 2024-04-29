@@ -19,6 +19,11 @@
  */
 
 namespace Graphin {
+    public enum ChartAxisStatus {
+        ENABLE,
+        DISABLE
+    }
+
     public class ChartAxis : Object, IChartDrawable {
         public ChartParameters parameters { get; set; }
 

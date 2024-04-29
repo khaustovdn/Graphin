@@ -40,8 +40,7 @@ namespace Graphin {
                 points_bar.add (new Point (i, Math.cos (i)));
             }
 
-            ChartParameters parameters = new ChartParameters (new Point (0.0, 0.0), 1.0);
-            this.chart = new Chart (parameters, new ChartAxis (parameters), new ChartGrid (parameters));
+            this.chart = new Chart (new Point (20.0, 20.0), 1.0, ChartAxisStatus.ENABLE, ChartGridStatus.ENABLE);
             ChartLineSerie serie = new ChartLineSerie (chart.parameters);
             ChartBarSerie serie_bar = new ChartBarSerie (chart.parameters);
             serie.points.add_all (points);

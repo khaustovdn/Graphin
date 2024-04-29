@@ -21,10 +21,10 @@
 namespace Graphin {
     public class ChartParameters : Object {
         public Point center { get; set; }
-        public double scale { get; set; }
+        public double zoom { get; set; }
 
-        public ChartParameters (Point center, double scale) {
-            Object (center: center, scale: scale);
+        public ChartParameters (Point center, double zoom) {
+            Object (center: center, zoom: zoom);
         }
     }
 }
