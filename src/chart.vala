@@ -45,22 +45,22 @@ namespace Graphin {
         }
 
         private void setup_gestures () {
-            Gtk.GestureZoom scale = new Gtk.GestureZoom ();
-            scale.scale_changed.connect (gesture_handler.handle_zoom);
-            scale.end.connect (gesture_handler.current_scale_reset);
+            Gtk.GestureZoom zoom = new Gtk.GestureZoom ();
+            zoom.scale_changed.connect (gesture_handler.handle_zoom);
+            zoom.end.connect (gesture_handler.zoom_reset);
 
             Gtk.EventControllerScroll scroll = new Gtk.EventControllerScroll (Gtk.EventControllerScrollFlags.BOTH_AXES);
             scroll.scroll.connect (gesture_handler.handle_scroll);
-            scroll.scroll_end.connect (gesture_handler.current_scale_reset);
+            scroll.scroll_end.connect (gesture_handler.zoom_reset);
 
             Gtk.GestureDrag drag = new Gtk.GestureDrag ();
             drag.drag_update.connect (gesture_handler.handle_drag);
-            drag.drag_end.connect (gesture_handler.current_center_reset);
+            drag.drag_end.connect (gesture_handler.center_reset);
 
             this.parameters.notify["zoom"].connect (this.queue_draw);
             this.parameters.notify["center"].connect (this.queue_draw);
 
-            this.add_controller (scale);
+            this.add_controller (zoom);
             this.add_controller (scroll);
             this.add_controller (drag);
         }

@@ -21,53 +21,51 @@
 namespace Graphin {
     public class ChartGestureHandler : Object {
         public ChartParameters parameters { get; set; }
-        private Point current_center { get; set; default = new Point (0, 0); }
-        private double current_scale { get; set; default = 1.0; }
+        private Point default_center { get; set; default = new Point (0, 0); }
+        private double default_zoom { get; set; default = 1.0; }
 
         public ChartGestureHandler (ChartParameters parameters) {
             Object (parameters: parameters);
         }
 
-        public void current_center_reset () {
-            this.current_center = new Point (0, 0);
+        public void center_reset () {
+            this.default_center = new Point (0, 0);
         }
 
-        public void current_scale_reset () {
-            this.current_scale = 1.0;
+        public void zoom_reset () {
+            this.default_zoom = 1.0;
         }
 
         public void handle_drag (double offset_x, double offset_y) {
-            var dx = offset_x - this.current_center.x;
-            var dy = offset_y - this.current_center.y;
+            double dx = offset_x - this.default_center.x;
+            double dy = offset_y - this.default_center.y;
             this.parameters.center = new Point (this.parameters.center.x + (dx > 0 ? 1 : -1) * dx.abs (),
                                                 this.parameters.center.y + (dy > 0 ? 1 : -1) * dy.abs ());
-            this.current_center = new Point (offset_x, offset_y);
+            this.default_center = new Point (offset_x, offset_y);
         }
 
         public void handle_zoom (Gtk.GestureZoom controller, double scale) {
-            var delta = (float) this.current_scale - scale;
-            var result = this.parameters.zoom + delta * this.parameters.zoom.abs () * 2;
-
-            if (result > 0 && result < double.MAX) {
-                double widget_horizontal_center = 0.0, widget_vertical_center = 0.0;
-                controller.get_bounding_box_center (out widget_horizontal_center, out widget_vertical_center);
-                double center_x = widget_horizontal_center - (widget_horizontal_center - this.parameters.center.x) * (this.parameters.zoom / result);
-                double center_y = widget_vertical_center - (widget_vertical_center - this.parameters.center.y) * (this.parameters.zoom / result);
-
-                this.parameters.center = new Point (center_x, center_y);
-                this.parameters.zoom = result;
-                this.current_scale = scale;
-            }
+            double delta = (float) this.default_zoom - scale;
+            this.default_zoom = scale;
+            scale = this.parameters.zoom + delta * this.parameters.zoom.abs () * 2;
+            update_zoom (controller.widget.get_width (), controller.widget.get_height (), scale);
         }
 
         public bool handle_scroll (Gtk.EventControllerScroll controller, double dx, double dy) {
-            double result = this.parameters.zoom + dy * this.parameters.zoom * 0.1;
-
-            if (result > 0 && result < double.MAX) {
-                this.parameters.zoom = result;
-            }
-
+            double scale = this.parameters.zoom + dy * this.parameters.zoom * 0.1;
+            update_zoom (controller.widget.get_width (), controller.widget.get_height (), scale);
             return true;
+        }
+
+        private void update_zoom (double width, double height, double scale) {
+            if (scale > 0 && scale < double.MAX) {
+                double widget_horizontal_center = width / 2, widget_vertical_center = height / 2;
+                double center_x = widget_horizontal_center - (widget_horizontal_center - this.parameters.center.x) * (this.parameters.zoom / scale);
+                double center_y = widget_vertical_center - (widget_vertical_center - this.parameters.center.y) * (this.parameters.zoom / scale);
+
+                this.parameters.center = new Point (center_x, center_y);
+                this.parameters.zoom = scale;
+            }
         }
     }
 }
