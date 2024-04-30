@@ -37,7 +37,7 @@ namespace Graphin {
 
             double step = this.calculate_grid_step (parameters.zoom);
 
-            for (double i = parameters.center.x + step, j = parameters.center.x - step; i < width || j > 0; i += step, j -= step) {
+            for (double i = parameters.center.x, j = parameters.center.x; i < width || j > 0; i += step, j -= step) {
                 if (i >= 0 && i <= width) {
                     cairo.move_to (i, 0.0);
                     cairo.line_to (i, height);
@@ -48,7 +48,7 @@ namespace Graphin {
                 }
             }
 
-            for (double i = parameters.center.y + step, j = parameters.center.y - step; i < height || j > 0; i += step, j -= step) {
+            for (double i = parameters.center.y, j = parameters.center.y; i < height || j > 0; i += step, j -= step) {
                 if (i >= 0 && i <= height) {
                     cairo.move_to (0.0, i);
                     cairo.line_to (width, i);
