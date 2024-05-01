@@ -27,9 +27,11 @@ namespace Graphin {
         public override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             cairo.set_line_width (4.0);
             foreach (var point in this.points) {
-                cairo.move_to (parameters.center.x + point.x / parameters.zoom, parameters.center.y);
-                cairo.line_to (parameters.center.x + point.x / parameters.zoom, parameters.center.y - point.y / parameters.zoom);
-                cairo.stroke ();
+                if (parameters.center.x + point.x / parameters.zoom > 0 && parameters.center.x + point.x / parameters.zoom < width) {
+                    cairo.move_to (parameters.center.x + point.x / parameters.zoom, parameters.center.y);
+                    cairo.line_to (parameters.center.x + point.x / parameters.zoom, parameters.center.y - point.y / parameters.zoom);
+                    cairo.stroke ();
+                }
             }
         }
     }

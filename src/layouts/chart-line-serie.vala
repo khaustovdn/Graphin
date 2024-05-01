@@ -26,11 +26,32 @@ namespace Graphin {
 
         public override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             cairo.set_line_width (1.0);
-            cairo.move_to (parameters.center.x + this.points.first ().x / parameters.zoom, parameters.center.y - this.points.first ().y / parameters.zoom);
-            foreach (var point in this.points) {
-                cairo.line_to (parameters.center.x + point.x / parameters.zoom, parameters.center.y - point.y / parameters.zoom);
+            for (int i = 0; i < points.size; i++) {
+                if (i < points.size - 1 && this.parameters.center.x + points[i].x / this.parameters.zoom < 0 && this.parameters.center.x + points[i + 1].x / this.parameters.zoom < 0)continue;
+                else if (i < points.size - 1 && this.parameters.center.x + points[i + 1].x / this.parameters.zoom < 0) {
+                    double x_difference = calculate_difference (points[i + 1].x / this.parameters.zoom, points[i].x / this.parameters.zoom);
+                    double y_difference = calculate_difference (points[i + 1].y / this.parameters.zoom, points[i].y / this.parameters.zoom);
+                    double calculated_y = (y_difference * calculate_difference (width - this.parameters.center.x, points[i].x / this.parameters.zoom) / x_difference) + (points[i].y / this.parameters.zoom);
+                    cairo.move_to (0, calculated_y);
+                } else if (i == 0) {
+                    cairo.move_to (this.parameters.center.x + points[i].x / this.parameters.zoom, this.parameters.center.y - points[i].y / this.parameters.zoom);
+                }
+
+                if (i > 0 && this.parameters.center.x + points[i - 1].x / this.parameters.zoom > width && this.parameters.center.x + points[i].x / this.parameters.zoom > width)continue;
+                else if (i > 0 && this.parameters.center.x + points[i].x / this.parameters.zoom > width) {
+                    double x_difference = calculate_difference (points[i].x / this.parameters.zoom, points[i - 1].x / this.parameters.zoom);
+                    double y_difference = calculate_difference (points[i].y / this.parameters.zoom, points[i - 1].y / this.parameters.zoom);
+                    double calculated_y = (y_difference * calculate_difference (width - this.parameters.center.x, points[i - 1].x / this.parameters.zoom) / x_difference) + (points[i - 1].y / this.parameters.zoom);
+                    cairo.line_to (width, this.parameters.center.y - calculated_y);
+                } else if (i > 0) {
+                    cairo.line_to (this.parameters.center.x + points[i].x / this.parameters.zoom, this.parameters.center.y - points[i].y / this.parameters.zoom);
+                }
             }
             cairo.stroke ();
+        }
+
+        private double calculate_difference (double x, double y) {
+            return x - y;
         }
     }
 }
