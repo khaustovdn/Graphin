@@ -20,37 +20,71 @@
 
 namespace Graphin {
     public class ChartLineSerie : ChartSerie, IChartDrawable {
-        public ChartLineSerie (ChartParameters parameters) {
-            Object (parameters: parameters);
+        public ChartLineSerie(ChartParameters parameters) {
+            Object(parameters: parameters);
         }
 
-        public override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            cairo.set_line_width (1.0);
-            for (int i = 0; i < points.size; i++) {
-                if (i < points.size - 1 && this.parameters.center.x + points[i].x / this.parameters.zoom < 0 && this.parameters.center.x + points[i + 1].x / this.parameters.zoom < 0)continue;
-                else if (i < points.size - 1 && this.parameters.center.x + points[i + 1].x / this.parameters.zoom < 0) {
-                    double x_difference = calculate_difference (points[i + 1].x / this.parameters.zoom, points[i].x / this.parameters.zoom);
-                    double y_difference = calculate_difference (points[i + 1].y / this.parameters.zoom, points[i].y / this.parameters.zoom);
-                    double calculated_y = (y_difference * calculate_difference (width - this.parameters.center.x, points[i].x / this.parameters.zoom) / x_difference) + (points[i].y / this.parameters.zoom);
-                    cairo.move_to (0, calculated_y);
-                } else if (i == 0) {
-                    cairo.move_to (this.parameters.center.x + points[i].x / this.parameters.zoom, this.parameters.center.y - points[i].y / this.parameters.zoom);
-                }
+        public override void draw(Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            cairo.set_line_width(1.0);
 
-                if (i > 0 && this.parameters.center.x + points[i - 1].x / this.parameters.zoom > width && this.parameters.center.x + points[i].x / this.parameters.zoom > width)continue;
-                else if (i > 0 && this.parameters.center.x + points[i].x / this.parameters.zoom > width) {
-                    double x_difference = calculate_difference (points[i].x / this.parameters.zoom, points[i - 1].x / this.parameters.zoom);
-                    double y_difference = calculate_difference (points[i].y / this.parameters.zoom, points[i - 1].y / this.parameters.zoom);
-                    double calculated_y = (y_difference * calculate_difference (width - this.parameters.center.x, points[i - 1].x / this.parameters.zoom) / x_difference) + (points[i - 1].y / this.parameters.zoom);
-                    cairo.line_to (width, this.parameters.center.y - calculated_y);
-                } else if (i > 0) {
-                    cairo.line_to (this.parameters.center.x + points[i].x / this.parameters.zoom, this.parameters.center.y - points[i].y / this.parameters.zoom);
-                }
+            ChartExtremes extremes = new ChartExtremes(this.points);
+            Point max_point = extremes.calculate_max_point(), min_point = extremes.calculate_min_point();
+
+            for (int i = 0; i < this.points.size; i++) {
+                if (should_skip_point(i, max_point, min_point, width, height))continue;
+                move_to_initial_point(cairo, i, width);
+                draw_line_to_point(cairo, i, width);
             }
-            cairo.stroke ();
+
+            cairo.stroke();
         }
 
-        private double calculate_difference (double x, double y) {
+        private bool should_skip_point(int index, Point max_point, Point min_point, double width, double height) {
+            return (is_point_outside_left_boundary(this.points.last()) || is_point_outside_right_boundary(this.points.first(), width)) ||
+                   (is_point_outside_top_boundary(min_point) || is_point_outside_bottom_boundary(max_point, height)) ||
+                   (index < this.points.size - 1 && is_point_outside_left_boundary(this.points[index]) && is_point_outside_left_boundary(this.points[index + 1])) ||
+                   (index > 0 && is_point_outside_right_boundary(this.points[index], height) && is_point_outside_right_boundary(this.points[index - 1], width));
+        }
+
+        private bool is_point_outside_left_boundary(Point point) {
+            return parameters.center.x + point.x / parameters.zoom < 0;
+        }
+
+        private bool is_point_outside_right_boundary(Point point, double width) {
+            return parameters.center.x + point.x / parameters.zoom > width;
+        }
+
+        private bool is_point_outside_top_boundary(Point point) {
+            return parameters.center.y - point.y / parameters.zoom < 0;
+        }
+
+        private bool is_point_outside_bottom_boundary(Point point, double height) {
+            return parameters.center.y - point.y / parameters.zoom > height;
+        }
+
+        private double calculate_end_point(int index, double width) {
+            double x_difference = calculate_difference(this.points[index].x / parameters.zoom, this.points[index - 1].x / parameters.zoom);
+            double y_difference = calculate_difference(this.points[index].y / parameters.zoom, this.points[index - 1].y / parameters.zoom);
+            return (y_difference * calculate_difference(width - parameters.center.x, this.points[index - 1].x / parameters.zoom) / x_difference) + (this.points[index - 1].y / parameters.zoom);
+        }
+
+        private void move_to_initial_point(Cairo.Context cairo, int index, double width) {
+            if (index < this.points.size - 1 && is_point_outside_left_boundary(this.points[index + 1])) {
+                cairo.move_to(0, parameters.center.y - calculate_end_point(index, width));
+            } else if (index == 0) {
+                cairo.move_to(parameters.center.x + this.points[index].x / parameters.zoom, parameters.center.y - this.points[index].y / parameters.zoom);
+            }
+        }
+
+        private void draw_line_to_point(Cairo.Context cairo, int index, double width) {
+            if (is_point_outside_right_boundary(this.points[index], width)) {
+                cairo.line_to(width, parameters.center.y - calculate_end_point(index, width));
+            } else {
+                cairo.line_to(parameters.center.x + this.points[index].x / parameters.zoom, parameters.center.y - points[index].y / parameters.zoom);
+            }
+        }
+
+        private double calculate_difference(double x, double y) {
             return x - y;
         }
     }

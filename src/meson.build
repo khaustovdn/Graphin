@@ -5,6 +5,7 @@ graphin_sources = (
     'application.vala',
     'chart-axis.vala',
     'chart-drawable.vala',
+    'chart-extremes.vala',
     'chart-gesture-handler.vala',
     'chart-grid.vala',
     'chart-parameters.vala',
