@@ -31,9 +31,12 @@ namespace Graphin {
             Point max_point = extremes.calculate_max_point(), min_point = extremes.calculate_min_point();
 
             for (int i = 0; i < this.points.size; i++) {
-                if (should_skip_point(i, max_point, min_point, width, height))continue;
-                move_to_initial_point(cairo, i, width);
-                draw_line_to_point(cairo, i, width);
+                if (should_skip_point(i, max_point, min_point, width, height)) {
+                    cairo.stroke();
+                    continue;
+                }
+                move_to_initial_point(cairo, i, width, height);
+                draw_line_to_point(cairo, i, width, height);
             }
 
             cairo.stroke();
@@ -42,7 +45,9 @@ namespace Graphin {
         private bool should_skip_point(int index, Point max_point, Point min_point, double width, double height) {
             return (is_point_outside_left_boundary(this.points.last()) || is_point_outside_right_boundary(this.points.first(), width)) ||
                    (is_point_outside_top_boundary(min_point) || is_point_outside_bottom_boundary(max_point, height)) ||
-                   (index < this.points.size - 1 && is_point_outside_left_boundary(this.points[index]) && is_point_outside_left_boundary(this.points[index + 1])) ||
+                   (index > 0 && index < this.points.size - 1 && is_point_outside_top_boundary(this.points[index - 1]) && is_point_outside_top_boundary(this.points[index]) && is_point_outside_top_boundary(this.points[index + 1])) ||
+                   (index > 0 && index < this.points.size - 1 && is_point_outside_bottom_boundary(this.points[index - 1], height) && is_point_outside_bottom_boundary(this.points[index], height) && is_point_outside_bottom_boundary(this.points[index + 1], height)) ||
+                   (index < this.points.size - 1 && is_point_outside_left_boundary(this.points[index + 1]) && is_point_outside_left_boundary(this.points[index])) ||
                    (index > 0 && is_point_outside_right_boundary(this.points[index], height) && is_point_outside_right_boundary(this.points[index - 1], width));
         }
 
@@ -62,23 +67,37 @@ namespace Graphin {
             return parameters.center.y - point.y / parameters.zoom > height;
         }
 
-        private double calculate_end_point(int index, double width) {
+        private double calculate_horizontal_end_point(int index, double width) {
             double x_difference = calculate_difference(this.points[index].x / parameters.zoom, this.points[index - 1].x / parameters.zoom);
             double y_difference = calculate_difference(this.points[index].y / parameters.zoom, this.points[index - 1].y / parameters.zoom);
             return (y_difference * calculate_difference(width - parameters.center.x, this.points[index - 1].x / parameters.zoom) / x_difference) + (this.points[index - 1].y / parameters.zoom);
         }
 
-        private void move_to_initial_point(Cairo.Context cairo, int index, double width) {
-            if (index < this.points.size - 1 && is_point_outside_left_boundary(this.points[index + 1])) {
-                cairo.move_to(0, parameters.center.y - calculate_end_point(index, width));
+        private double calculate_vertical_end_point(int index, double height) {
+            double x_difference = calculate_difference(this.points[index].x / parameters.zoom, this.points[index - 1].x / parameters.zoom);
+            double y_difference = calculate_difference(this.points[index].y / parameters.zoom, this.points[index - 1].y / parameters.zoom);
+            return (x_difference * calculate_difference(parameters.center.y - height, this.points[index - 1].y / parameters.zoom) / y_difference) + (this.points[index - 1].x / parameters.zoom);
+        }
+
+        private void move_to_initial_point(Cairo.Context cairo, int index, double width, double height) {
+            if (index > 0 && is_point_outside_top_boundary(this.points[index - 1]) && !is_point_outside_top_boundary(this.points[index])) {
+                cairo.move_to(parameters.center.x + calculate_vertical_end_point(index, 0), 0);
+            } else if (index > 0 && is_point_outside_bottom_boundary(this.points[index - 1], height) && !is_point_outside_bottom_boundary(this.points[index], height)) {
+                cairo.move_to(parameters.center.x + calculate_vertical_end_point(index, height), height);
+            } else if (index < this.points.size - 1 && is_point_outside_left_boundary(this.points[index + 1])) {
+                cairo.move_to(0, parameters.center.y - calculate_horizontal_end_point(index + 1, width));
             } else if (index == 0) {
                 cairo.move_to(parameters.center.x + this.points[index].x / parameters.zoom, parameters.center.y - this.points[index].y / parameters.zoom);
             }
         }
 
-        private void draw_line_to_point(Cairo.Context cairo, int index, double width) {
-            if (is_point_outside_right_boundary(this.points[index], width)) {
-                cairo.line_to(width, parameters.center.y - calculate_end_point(index, width));
+        private void draw_line_to_point(Cairo.Context cairo, int index, double width, double height) {
+            if (index > 0 && !is_point_outside_top_boundary(this.points[index - 1]) && is_point_outside_top_boundary(this.points[index])) {
+                cairo.line_to(parameters.center.x + calculate_vertical_end_point(index, 0), 0);
+            } else if (index > 0 && !is_point_outside_bottom_boundary(this.points[index - 1], height) && is_point_outside_bottom_boundary(this.points[index], height)) {
+                cairo.line_to(parameters.center.x + calculate_vertical_end_point(index, height), height);
+            } else if (index > 0 && is_point_outside_right_boundary(this.points[index], width)) {
+                cairo.line_to(width, parameters.center.y - calculate_horizontal_end_point(index, width));
             } else {
                 cairo.line_to(parameters.center.x + this.points[index].x / parameters.zoom, parameters.center.y - points[index].y / parameters.zoom);
             }

@@ -59,7 +59,7 @@ namespace Graphin {
 
         private void update_zoom (double width, double height, double scale) {
             if (scale > 0 && scale < double.MAX) {
-                bool center_in_range = this.parameters.center.x.abs () < short.MAX && this.parameters.center.y.abs () < short.MAX;
+                bool center_in_range = this.parameters.center.x.abs () < int.MAX && this.parameters.center.y.abs () < int.MAX;
                 if (center_in_range || !center_in_range && this.parameters.zoom / scale < 1) {
                     double widget_horizontal_center = width / 2, widget_vertical_center = height / 2;
                     double center_x = widget_horizontal_center - (widget_horizontal_center - this.parameters.center.x) * (this.parameters.zoom / scale);
