@@ -48,12 +48,12 @@ namespace Graphin {
             double delta = (float) this.default_zoom - scale;
             this.default_zoom = scale;
             scale = this.parameters.zoom + delta * this.parameters.zoom.abs () * 2;
-            update_zoom (controller.widget.get_width (), controller.widget.get_height (), scale);
+            this.update_zoom (controller.widget.get_width (), controller.widget.get_height (), scale);
         }
 
         public bool handle_scroll (Gtk.EventControllerScroll controller, double dx, double dy) {
             double scale = this.parameters.zoom + dy * this.parameters.zoom * 0.1;
-            update_zoom (controller.widget.get_width (), controller.widget.get_height (), scale);
+            this.update_zoom (controller.widget.get_width (), controller.widget.get_height (), scale);
             return true;
         }
 

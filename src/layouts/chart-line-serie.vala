@@ -27,72 +27,72 @@ namespace Graphin {
         public override void draw(Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
             base.draw(drawing_area, cairo, width, height);
             for (int i = 0; i < this.points.size; i++) {
-                if (should_skip_point(i, extremes, width, height)) {
+                if (this.should_skip_point(i, width, height)) {
                     cairo.stroke();
                     continue;
                 }
 
-                move_to_initial_point(cairo, i, width, height);
-                draw_line_to_point(cairo, i, width, height);
+                this.move_to_initial_point(cairo, i, width, height);
+                this.draw_line_to_point(cairo, i, width, height);
             }
             cairo.stroke();
         }
 
-        protected override bool should_skip_point(int index, ChartExtremes extremes, double width, double height) {
-            return (is_point_outside_left_boundary(this.points.last()) ||
-                    is_point_outside_right_boundary(this.points.first(), width) ||
-                    is_point_outside_top_boundary(extremes.min_point) ||
-                    is_point_outside_bottom_boundary(extremes.max_point, height)) ||
-                   (index > 0 && index < this.points.size - 1 &&
-                    is_point_outside_top_boundary(this.points[index - 1]) &&
-                    is_point_outside_top_boundary(this.points[index]) &&
-                    is_point_outside_top_boundary(this.points[index + 1])) ||
-                   (index > 0 && index < this.points.size - 1 &&
-                    is_point_outside_bottom_boundary(this.points[index - 1], height) &&
-                    is_point_outside_bottom_boundary(this.points[index], height) &&
-                    is_point_outside_bottom_boundary(this.points[index + 1], height)) ||
-                   (index < this.points.size - 1 &&
-                    is_point_outside_left_boundary(this.points[index + 1]) &&
-                    is_point_outside_left_boundary(this.points[index])) ||
-                   (index > 0 &&
-                    is_point_outside_right_boundary(this.points[index - 1], width) &&
-                    is_point_outside_right_boundary(this.points[index], height));
-        }
-
         protected override void move_to_initial_point(Cairo.Context cairo, int index, double width, double height) {
-            if (index > 0 && is_point_outside_top_boundary(this.points[index - 1]) && !is_point_outside_top_boundary(this.points[index])) {
-                cairo.move_to(parameters.center.x + calculate_vertical_end_point(index, 0), 0);
-            } else if (index > 0 && is_point_outside_bottom_boundary(this.points[index - 1], height) && !is_point_outside_bottom_boundary(this.points[index], height)) {
-                cairo.move_to(parameters.center.x + calculate_vertical_end_point(index, height), height);
-            } else if (index < this.points.size - 1 && is_point_outside_left_boundary(this.points[index + 1])) {
-                cairo.move_to(0, parameters.center.y - calculate_horizontal_end_point(index + 1, width));
+            if (index > 0 && this.is_point_outside_top_boundary(this.points[index - 1]) && !this.is_point_outside_top_boundary(this.points[index])) {
+                cairo.move_to(this.parameters.center.x + this.calculate_vertical_end_point(index, 0), 0);
+            } else if (index > 0 && this.is_point_outside_bottom_boundary(this.points[index - 1], height) && !this.is_point_outside_bottom_boundary(this.points[index], height)) {
+                cairo.move_to(this.parameters.center.x + this.calculate_vertical_end_point(index, height), height);
+            } else if (index < this.points.size - 1 && this.is_point_outside_left_boundary(this.points[index + 1])) {
+                cairo.move_to(0, this.parameters.center.y - this.calculate_horizontal_end_point(index + 1, width));
             } else if (index == 0) {
-                cairo.move_to(parameters.center.x + this.points[index].x / parameters.zoom, parameters.center.y - this.points[index].y / parameters.zoom);
+                cairo.move_to(this.parameters.center.x + this.points[index].x / this.parameters.zoom, this.parameters.center.y - this.points[index].y / this.parameters.zoom);
             }
         }
 
         protected override void draw_line_to_point(Cairo.Context cairo, int index, double width, double height) {
-            if (index > 0 && !is_point_outside_top_boundary(this.points[index - 1]) && is_point_outside_top_boundary(this.points[index])) {
-                cairo.line_to(parameters.center.x + calculate_vertical_end_point(index, 0), 0);
-            } else if (index > 0 && !is_point_outside_bottom_boundary(this.points[index - 1], height) && is_point_outside_bottom_boundary(this.points[index], height)) {
-                cairo.line_to(parameters.center.x + calculate_vertical_end_point(index, height), height);
-            } else if (index > 0 && is_point_outside_right_boundary(this.points[index], width)) {
-                cairo.line_to(width, parameters.center.y - calculate_horizontal_end_point(index, width));
+            if (index > 0 && !this.is_point_outside_top_boundary(this.points[index - 1]) && this.is_point_outside_top_boundary(this.points[index])) {
+                cairo.line_to(this.parameters.center.x + this.calculate_vertical_end_point(index, 0), 0);
+            } else if (index > 0 && !this.is_point_outside_bottom_boundary(this.points[index - 1], height) && this.is_point_outside_bottom_boundary(this.points[index], height)) {
+                cairo.line_to(this.parameters.center.x + this.calculate_vertical_end_point(index, height), height);
+            } else if (index > 0 && this.is_point_outside_right_boundary(this.points[index], width)) {
+                cairo.line_to(width, this.parameters.center.y - this.calculate_horizontal_end_point(index, width));
             } else {
-                cairo.line_to(parameters.center.x + this.points[index].x / parameters.zoom, parameters.center.y - points[index].y / parameters.zoom);
+                cairo.line_to(this.parameters.center.x + this.points[index].x / this.parameters.zoom, this.parameters.center.y - this.points[index].y / this.parameters.zoom);
             }
         }
 
+        protected override bool should_skip_point(int index, double width, double height) {
+            return (this.is_point_outside_left_boundary(this.points.last()) ||
+                    this.is_point_outside_right_boundary(this.points.first(), width) ||
+                    this.is_point_outside_top_boundary(this.extremes.min_point) ||
+                    this.is_point_outside_bottom_boundary(this.extremes.max_point, height)) ||
+                   (index > 0 && index < this.points.size - 1 &&
+                    this.is_point_outside_top_boundary(this.points[index - 1]) &&
+                    this.is_point_outside_top_boundary(this.points[index]) &&
+                    this.is_point_outside_top_boundary(this.points[index + 1])) ||
+                   (index > 0 && index < this.points.size - 1 &&
+                    this.is_point_outside_bottom_boundary(this.points[index - 1], height) &&
+                    this.is_point_outside_bottom_boundary(this.points[index], height) &&
+                    this.is_point_outside_bottom_boundary(this.points[index + 1], height)) ||
+                   (index < this.points.size - 1 &&
+                    this.is_point_outside_left_boundary(this.points[index + 1]) &&
+                    this.is_point_outside_left_boundary(this.points[index])) ||
+                   (index > 0 &&
+                    this.is_point_outside_right_boundary(this.points[index - 1], width) &&
+                    this.is_point_outside_right_boundary(this.points[index], height));
+        }
+
         private double calculate_horizontal_end_point(int index, double width) {
-            double x_difference = calculate_difference(this.points[index].x / parameters.zoom, this.points[index - 1].x / parameters.zoom);
-            double y_difference = calculate_difference(this.points[index].y / parameters.zoom, this.points[index - 1].y / parameters.zoom);
-            return (y_difference * calculate_difference(width - parameters.center.x, this.points[index - 1].x / parameters.zoom) / x_difference) + (this.points[index - 1].y / parameters.zoom);
+            double x_difference = this.calculate_difference(this.points[index].x / this.parameters.zoom, this.points[index - 1].x / this.parameters.zoom);
+            double y_difference = this.calculate_difference(this.points[index].y / this.parameters.zoom, this.points[index - 1].y / this.parameters.zoom);
+            return (y_difference * this.calculate_difference(width - this.parameters.center.x, this.points[index - 1].x / this.parameters.zoom) / x_difference) + (this.points[index - 1].y / this.parameters.zoom);
         }
 
         private double calculate_vertical_end_point(int index, double height) {
-            double x_difference = calculate_difference(this.points[index].x / parameters.zoom, this.points[index - 1].x / parameters.zoom);
-            double y_difference = calculate_difference(this.points[index].y / parameters.zoom, this.points[index - 1].y / parameters.zoom);
-            return (x_difference * calculate_difference(parameters.center.y - height, this.points[index - 1].y / parameters.zoom) / y_difference) + (this.points[index - 1].x / parameters.zoom);
+            double x_difference = this.calculate_difference(this.points[index].x / this.parameters.zoom, this.points[index - 1].x / this.parameters.zoom);
+            double y_difference = this.calculate_difference(this.points[index].y / this.parameters.zoom, this.points[index - 1].y / this.parameters.zoom);
+            return (x_difference * this.calculate_difference(this.parameters.center.y - height, this.points[index - 1].y / this.parameters.zoom) / y_difference) + (this.points[index - 1].x / this.parameters.zoom);
         }
 
         private double calculate_difference(double x, double y) {

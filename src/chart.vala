@@ -24,7 +24,7 @@ namespace Graphin {
         public ChartAxis? axis { get; set; }
         public ChartGrid? grid { get; set; }
         public ChartGestureHandler gesture_handler { get; construct; }
-        public Gee.ArrayList<ChartSerie> series { get; default = new Gee.ArrayList<ChartSerie> (); }
+        private Gee.ArrayList<ChartSerie> series { get; default = new Gee.ArrayList<ChartSerie> (); }
 
         public Chart (Point center, double zoom, ChartAxisStatus axis_status, ChartGridStatus grid_status) {
             Object (parameters : new ChartParameters (new Point (center.x, center.y), zoom));
@@ -44,18 +44,36 @@ namespace Graphin {
             this.set_draw_func (this.draw);
         }
 
+        public void add_serie (ChartSerieType serie_type, Gee.ArrayList<Point> points) {
+            ChartSerie? serie = null;
+
+            switch (serie_type) {
+                case ChartSerieType.BAR:
+                    serie = new ChartBarSerie(this.parameters);
+                    break;
+                case ChartSerieType.LINE:
+                    serie = new ChartLineSerie(this.parameters);
+                    break;
+            }
+
+            if (serie != null) {
+                serie.points.add_all (points);
+                this.series.add (serie);
+            }
+        }
+
         private void setup_gestures () {
             Gtk.GestureZoom zoom = new Gtk.GestureZoom ();
-            zoom.scale_changed.connect (gesture_handler.handle_zoom);
-            zoom.end.connect (gesture_handler.zoom_reset);
+            zoom.scale_changed.connect (this.gesture_handler.handle_zoom);
+            zoom.end.connect (this.gesture_handler.zoom_reset);
 
             Gtk.EventControllerScroll scroll = new Gtk.EventControllerScroll (Gtk.EventControllerScrollFlags.BOTH_AXES);
-            scroll.scroll.connect (gesture_handler.handle_scroll);
-            scroll.scroll_end.connect (gesture_handler.zoom_reset);
+            scroll.scroll.connect (this.gesture_handler.handle_scroll);
+            scroll.scroll_end.connect (this.gesture_handler.zoom_reset);
 
             Gtk.GestureDrag drag = new Gtk.GestureDrag ();
-            drag.drag_update.connect (gesture_handler.handle_drag);
-            drag.drag_end.connect (gesture_handler.center_reset);
+            drag.drag_update.connect (this.gesture_handler.handle_drag);
+            drag.drag_end.connect (this.gesture_handler.center_reset);
 
             this.parameters.notify["zoom"].connect (this.queue_draw);
             this.parameters.notify["center"].connect (this.queue_draw);

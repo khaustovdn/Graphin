@@ -18,80 +18,65 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+ //need to edit
+
 namespace Graphin {
     public class ChartExtremes : Object {
-        public Gee.ArrayList<Point> points { private get; construct; }
+        public Gee.ArrayList<Point> max_points { get; set; }
+        public Gee.ArrayList<Point> min_points { get; set; }
+        public Point max_point { get; set; }
+        public Point min_point { get; set; }
 
-        public Gee.ArrayList<Point> max_points { get; construct; }
-        public Gee.ArrayList<Point> min_points { get; construct; }
-        public Point max_point { get; construct; }
-        public Point min_point { get; construct; }
-
-        public ChartExtremes(Gee.ArrayList<Point> points) {
-            Object(points: points);
+        public ChartExtremes() {
+            Object();
         }
 
-        construct {
-            max_points = calculate_max_points();
-            min_points = calculate_min_points();
-            max_point = calculate_max_point();
-            min_point = calculate_min_point();
-        }
-
-        public Point calculate_max_point() {
-            Point max_point = points.first();
+        public void calculate_max_point(Gee.ArrayList<Point> points) {
+            this.max_point = points.first();
 
             for (int i = 0; i < points.size; i++) {
-                if (max_point.y < points[i].y) {
-                    max_point = points[i];
+                if (this.max_point.y < points[i].y) {
+                    this.max_point = points[i];
                 }
             }
-
-            return max_point;
         }
 
-        public Point calculate_min_point() {
-            Point min_point = points.first();
+        public void calculate_min_point(Gee.ArrayList<Point> points) {
+            this.min_point = points.first();
 
             for (int i = 0; i < points.size; i++) {
-                if (min_point.y > points[i].y) {
-                    min_point = points[i];
+                if (this.min_point.y > points[i].y) {
+                    this.min_point = points[i];
                 }
             }
-
-            return min_point;
         }
 
-        public Gee.ArrayList<Point> calculate_max_points() {
-            Gee.ArrayList<Point> max_points = new Gee.ArrayList<Point> ();
+        public void calculate_max_points(Gee.ArrayList<Point> points) {
+            this.max_points = new Gee.ArrayList<Point> ();
 
             for (int i = 0; i < points.size; i++) {
                 if (points.size >= 3 && i > 0 && i < points.size - 1 && points[i].y > points[i - 1].y && points[i].y > points[i + 1].y) {
-                    max_points.add(points[i]);
+                    this.max_points.add(points[i]);
                 } else if (points.size >= 2 && i == 0 && points[i].y > points[i + 1].y) {
-                    max_points.add(points[i]);
+                    this.max_points.add(points[i]);
                 } else if (points.size >= 2 && i == points.size - 1 && points[i - 1].y < points[i].y) {
-                    max_points.add(points[i]);
+                    this.max_points.add(points[i]);
                 }
             }
-
-            return max_points;
         }
 
-        public Gee.ArrayList<Point> calculate_min_points() {
-            Gee.ArrayList<Point> min_points = new Gee.ArrayList<Point> ();
+        public void calculate_min_points(Gee.ArrayList<Point> points) {
+            this.min_points = new Gee.ArrayList<Point> ();
 
             for (int i = 0; i < points.size; i++) {
                 if (points.size >= 3 && i > 0 && i < points.size - 1 && points[i].y < points[i - 1].y && points[i].y < points[i + 1].y) {
-                    min_points.add(points[i]);
+                    this.min_points.add(points[i]);
                 } else if (points.size >= 2 && i == 0 && points[i].y < points[i + 1].y) {
-                    min_points.add(points[i]);
+                    this.min_points.add(points[i]);
                 } else if (points.size >= 2 && i == points.size - 1 && points[i - 1].y > points[i].y) {
-                    min_points.add(points[i]);
+                    this.min_points.add(points[i]);
                 }
             }
-
-            return min_points;
         }
     }
 }

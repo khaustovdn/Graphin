@@ -35,12 +35,12 @@ namespace Graphin {
             cairo.set_source_rgb (0.5, 0.5, 0.5);
             cairo.set_line_width (0.5);
 
-            cairo.move_to (parameters.center.x, 0.0);
-            cairo.line_to (parameters.center.x, height);
+            cairo.move_to (this.parameters.center.x, 0.0);
+            cairo.line_to (this.parameters.center.x, height);
             cairo.stroke ();
 
-            cairo.line_to (0.0, parameters.center.y);
-            cairo.line_to (width, parameters.center.y);
+            cairo.line_to (0.0, this.parameters.center.y);
+            cairo.line_to (width, this.parameters.center.y);
             cairo.stroke ();
         }
     }

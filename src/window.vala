@@ -41,12 +41,8 @@ namespace Graphin {
             }
 
             this.chart = new Chart (new Point (20.0, 20.0), 1.0, ChartAxisStatus.ENABLE, ChartGridStatus.ENABLE);
-            ChartLineSerie serie = new ChartLineSerie (chart.parameters);
-            ChartBarSerie serie_bar = new ChartBarSerie (chart.parameters);
-            serie.points.add_all (points);
-            serie_bar.points.add_all (points_bar);
-            this.chart.series.add (serie);
-            this.chart.series.add (serie_bar);
+            this.chart.add_serie (ChartSerieType.LINE, points);
+            this.chart.add_serie (ChartSerieType.BAR, points_bar);
             this.chart_bin.set_child (this.chart);
         }
     }
