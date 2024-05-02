@@ -20,18 +20,38 @@
 
 namespace Graphin {
     public class ChartBarSerie : ChartSerie {
-        public ChartBarSerie (ChartParameters parameters) {
-            Object (parameters: parameters);
+        public ChartBarSerie(ChartParameters parameters) {
+            Object(parameters: parameters);
         }
 
-        public override void draw (Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            cairo.set_line_width (4.0);
-            foreach (var point in this.points) {
-                if (parameters.center.x + point.x / parameters.zoom > 0 && parameters.center.x + point.x / parameters.zoom < width) {
-                    cairo.move_to (parameters.center.x + point.x / parameters.zoom, parameters.center.y);
-                    cairo.line_to (parameters.center.x + point.x / parameters.zoom, parameters.center.y - point.y / parameters.zoom);
-                    cairo.stroke ();
-                }
+        protected override bool should_skip_point(int index, ChartExtremes extremes, double width, double height) {
+            return (is_point_outside_left_boundary(this.points[index]) ||
+                    is_point_outside_right_boundary(this.points[index], width) ||
+                    is_point_outside_top_boundary(extremes.min_point) ||
+                    is_point_outside_bottom_boundary(extremes.max_point, height)) ||
+                   (is_point_outside_top_boundary(new Point(this.points[index].x, 0)) &&
+                    is_point_outside_top_boundary(this.points[index]) ||
+                    is_point_outside_bottom_boundary(new Point(this.points[index].x, 0), height) &&
+                    is_point_outside_bottom_boundary(this.points[index], height));
+        }
+
+        protected override void move_to_initial_point(Cairo.Context cairo, int index, double width, double height) {
+            if (is_point_outside_top_boundary(new Point(this.points[index].x, 0)) && !is_point_outside_top_boundary(this.points[index])) {
+                cairo.move_to(parameters.center.x + this.points[index].x / parameters.zoom, 0);
+            } else if (is_point_outside_bottom_boundary(new Point(this.points[index].x, 0), height) && !is_point_outside_bottom_boundary(this.points[index], height)) {
+                cairo.move_to(parameters.center.x + this.points[index].x / parameters.zoom, height);
+            } else {
+                cairo.move_to(parameters.center.x + this.points[index].x / parameters.zoom, parameters.center.y);
+            }
+        }
+
+        protected override void draw_line_to_point(Cairo.Context cairo, int index, double width, double height) {
+            if (is_point_outside_top_boundary(this.points[index])) {
+                cairo.line_to(parameters.center.x + this.points[index].x / parameters.zoom, 0);
+            } else if (is_point_outside_bottom_boundary(this.points[index], height)) {
+                cairo.line_to(parameters.center.x + this.points[index].x / parameters.zoom, height);
+            } else {
+                cairo.line_to(parameters.center.x + this.points[index].x / parameters.zoom, parameters.center.y - points[index].y / parameters.zoom);
             }
         }
     }

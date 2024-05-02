@@ -20,10 +20,22 @@
 
 namespace Graphin {
     public class ChartExtremes : Object {
-        public Gee.ArrayList<Point> points { get; construct; default = new Gee.ArrayList<Point> (); }
+        public Gee.ArrayList<Point> points { private get; construct; }
+
+        public Gee.ArrayList<Point> max_points { get; construct; }
+        public Gee.ArrayList<Point> min_points { get; construct; }
+        public Point max_point { get; construct; }
+        public Point min_point { get; construct; }
 
         public ChartExtremes(Gee.ArrayList<Point> points) {
             Object(points: points);
+        }
+
+        construct {
+            max_points = calculate_max_points();
+            min_points = calculate_min_points();
+            max_point = calculate_max_point();
+            min_point = calculate_min_point();
         }
 
         public Point calculate_max_point() {
