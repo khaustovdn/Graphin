@@ -24,6 +24,20 @@ namespace Graphin {
             Object(parameters: parameters);
         }
 
+        public override void draw(Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            base.draw(drawing_area, cairo, width, height);
+            for (int i = 0; i < this.points.size; i++) {
+                if (should_skip_point(i, extremes, width, height)) {
+                    cairo.stroke();
+                    continue;
+                }
+
+                move_to_initial_point(cairo, i, width, height);
+                draw_line_to_point(cairo, i, width, height);
+            }
+            cairo.stroke();
+        }
+
         protected override bool should_skip_point(int index, ChartExtremes extremes, double width, double height) {
             return (is_point_outside_left_boundary(this.points.last()) ||
                     is_point_outside_right_boundary(this.points.first(), width) ||

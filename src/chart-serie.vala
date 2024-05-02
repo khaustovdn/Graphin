@@ -23,21 +23,9 @@ namespace Graphin {
         public ChartParameters parameters { get; construct; }
         public ChartExtremes extremes { get; set; }
         public Gee.ArrayList<Point> points { get; default = new Gee.ArrayList<Point> (); }
-        public void draw(Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
-            cairo.set_line_width(4.0);
-
+        public virtual void draw(Gtk.DrawingArea drawing_area, Cairo.Context cairo, int width, int height) {
+            cairo.set_line_width(3.0);
             if (points.size > 0)extremes = new ChartExtremes(this.points);
-
-            for (int i = 0; i < this.points.size; i++) {
-                if (should_skip_point(i, extremes, width, height)) {
-                    cairo.stroke();
-                    continue;
-                }
-
-                move_to_initial_point(cairo, i, width, height);
-                draw_line_to_point(cairo, i, width, height);
-                cairo.stroke();
-            }
         }
 
         protected virtual bool should_skip_point(int index, ChartExtremes extremes, double width, double height) {

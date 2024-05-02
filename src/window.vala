@@ -33,10 +33,10 @@ namespace Graphin {
         construct {
             Gee.ArrayList<Point> points = new Gee.ArrayList<Point> ();
             Gee.ArrayList<Point> points_bar = new Gee.ArrayList<Point> ();
-            for (double i = -10; i <= 10; i += 0.01) {
+            for (double i = -30; i <= 30; i += 0.01) {
                 points.add (new Point (i, Math.cos (i) * i));
             }
-            for (double i = -10; i <= 10; i += 1) {
+            for (double i = -30; i <= 30; i += 1) {
                 points_bar.add (new Point (i, Math.cos (i) * i));
             }
 
@@ -45,7 +45,7 @@ namespace Graphin {
             ChartBarSerie serie_bar = new ChartBarSerie (chart.parameters);
             serie.points.add_all (points);
             serie_bar.points.add_all (points_bar);
-            //this.chart.series.add (serie);
+            this.chart.series.add (serie);
             this.chart.series.add (serie_bar);
             this.chart_bin.set_child (this.chart);
         }
